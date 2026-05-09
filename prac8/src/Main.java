@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -15,16 +16,16 @@ public class Main {
         FTPClient ftpClient = new FTPClient();
 
         try {
-
-            ftpClient.connect("localhost", 2121);
-
+            ftpClient.connect("127.0.0.1", 2121);
             ftpClient.login("anonymous", "test");
 
-            ftpClient.disconnect();
+            Socket dataSocket = ftpClient.openPassiveDataSocket();
+            System.out.println("Passive data socket opened successfully.");
+            dataSocket.close();
 
+            ftpClient.disconnect();
         }
         catch (IOException e) {
-
             System.out.println("FTP error: " + e.getMessage());
         }
 
