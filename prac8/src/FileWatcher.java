@@ -9,11 +9,13 @@ public class FileWatcher {
     private final Path watchedDirectory;
     private final FTPClient ftpClient;
     private final Map<String, Long> knownFiles;
+    private final Map<String, Integer> fileVersions;
 
     public FileWatcher(Path watchedDirectory, FTPClient ftpClient) {
         this.watchedDirectory = watchedDirectory;
         this.ftpClient = ftpClient;
         this.knownFiles = new HashMap<>();
+        this.fileVersions = new HashMap<>();
     }
 
     public void scanDirectory() throws IOException {
@@ -46,11 +48,23 @@ public class FileWatcher {
     }
 
     private void uploadChangedFile(Path file, String filename) throws IOException {
+        String versionedFilename = getVersionedFilename(filename);
+
         ftpClient.connect("127.0.0.1", 2121);
         ftpClient.login("anonymous", "test");
-        ftpClient.uploadFile(file, filename);
+        ftpClient.uploadFile(file, versionedFilename);
         ftpClient.disconnect();
 
-        System.out.println("Uploaded: " + filename);
+        System.out.println("Uploaded: " + versionedFilename);
+    }
+
+    private String getVersionedFilename(String filename) {
+        int version = fileVersions.getOrDefault(filename, 0);
+
+        String versionText = String.format("%03d", version);
+
+        fileVersions.put(filename, version + 1);
+
+        return filename + "." + versionText;
     }
 }
