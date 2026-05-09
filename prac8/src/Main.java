@@ -12,6 +12,22 @@ public class Main {
 
         System.out.println("Watching directory: " + watchedDirectory.toAbsolutePath());
 
+        FTPClient ftpClient = new FTPClient();
+
+        try {
+
+            ftpClient.connect("localhost", 2121);
+
+            ftpClient.login("anonymous", "test");
+
+            ftpClient.disconnect();
+
+        }
+        catch (IOException e) {
+
+            System.out.println("FTP error: " + e.getMessage());
+        }
+
         while (true) {
             try {
                 watcher.scanDirectory();
