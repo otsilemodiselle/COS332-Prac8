@@ -19,9 +19,10 @@ public class Main {
             ftpClient.connect("127.0.0.1", 2121);
             ftpClient.login("anonymous", "test");
 
-            Socket dataSocket = ftpClient.openPassiveDataSocket();
-            System.out.println("Passive data socket opened successfully.");
-            dataSocket.close();
+            ftpClient.uploadFile(
+                    Paths.get("watched", "notes.txt"),
+                    "notes.txt"
+            );
 
             ftpClient.disconnect();
         }

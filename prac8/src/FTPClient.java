@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Path;
 
 public class FTPClient {
 
@@ -64,5 +65,23 @@ public class FTPClient {
         sendCommand("QUIT");
         System.out.println("SERVER: " + reader.readLine());
         controlSocket.close();
+    }
+
+    public void uploadFile(Path localFile, String remoteFilename) throws IOException {
+        Socket dataSocket = openPassiveDataSocket();
+
+        sendCommand("STOR " + remoteFilename);
+        System.out.println("SERVER: " + reader.readLine());
+
+        try (
+                OutputStream dataOutput = dataSocket.getOutputStream();
+                InputStream fileInput = new FileInputStream(localFile.toFile())
+        ) {
+            fileInput.transferTo(dataOutput);
+        }
+
+        dataSocket.close();
+
+        System.out.println("SERVER: " + reader.readLine());
     }
 }
